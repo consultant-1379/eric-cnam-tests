@@ -1,0 +1,52 @@
+global:
+  security:
+    tls:
+      enabled: false
+  networkPolicy:
+    enabled: false
+  registry:
+    imagePullPolicy: Always
+    pullSecret: regcred
+  pullSecret: regcred
+  default:
+    timeout: 900
+    wait: true
+  app:
+    enabled: true
+    namespace: your-namespace
+  
+nameOverride: ""
+fullnameOverride: ""
+
+eric-lcm-container-registry:
+  enabled: true
+  ingress:
+    enabled: false
+  registry:
+    users:
+      secret: "eric-container-registry-users-secret"
+      name: "testuser"
+      password: "testpasswd"
+    s3:
+      enabled: false
+  brAgent:
+    enabled: false
+  persistence:
+    enabled: false
+
+eric-lcm-helm-chart-registry:
+  enabled: true
+  env:
+    secret:
+      BASIC_AUTH_USER: "test-username"
+      BASIC_AUTH_PASS: "test-password"
+    s3:
+      enabled: false
+  ingress:
+    enabled: false
+  brAgent:
+    enabled: false
+  persistentVolumeClaim:
+    enabled: false
+  updateStrategy:
+    type: Recreate

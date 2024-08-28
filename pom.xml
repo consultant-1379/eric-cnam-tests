@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ ~ COPYRIGHT Ericsson 2023
+ ~
+ ~
+ ~
+ ~ The copyright to the computer program(s) herein is the property of
+ ~
+ ~ Ericsson Inc. The programs may be used and/or copied only with written
+ ~
+ ~ permission from Ericsson Inc. or in accordance with the terms and
+ ~
+ ~ conditions stipulated in the agreement/contract under which the
+ ~
+ ~ program(s) have been supplied.
+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.ericsson.oss.management</groupId>
+    <artifactId>eric-cnam-tests</artifactId>
+    <packaging>pom</packaging>
+    <version>0.1.0-SNAPSHOT</version>
+
+    <name>Cloud Native Application Manager Tests Service</name>
+
+    <modules>
+        <module>eric-cnam-tests-testware</module>
+    </modules>
+
+    <properties>
+        <!-- Project Specific Properties -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>11</java.version>
+
+        <!-- Build Plugins -->
+        <maven-checkstyle-plugin.version>3.0.0</maven-checkstyle-plugin.version>
+        <license-maven-plugin.version>3.0</license-maven-plugin.version>
+        <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
+        <allure.results.directory>${project.build.directory}/allure-results</allure.results.directory>
+        <maven-surefire-plugin.version>2.22.0</maven-surefire-plugin.version>
+
+        <!-- 3PP Dependencies -->
+        <lombok.version>1.18.20</lombok.version>
+        <testng.version>7.6.1</testng.version>
+        <spring-web.version>5.3.18</spring-web.version>
+        <allure.version>2.17.3</allure.version>
+        <allure-testng.version>2.17.3</allure-testng.version>
+        <assertj-core.version>3.23.1</assertj-core.version>
+        <kubernetes-client.version>6.2.0</kubernetes-client.version>
+        <jackson-databind.version>2.14.1</jackson-databind.version>
+        <awaitility.version>4.2.0</awaitility.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson-databind.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.testng</groupId>
+                <artifactId>testng</artifactId>
+                <version>${testng.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-web</artifactId>
+                <version>${spring-web.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.qameta.allure</groupId>
+                <artifactId>allure-java-commons</artifactId>
+                <version>${allure.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.qameta.allure</groupId>
+                <artifactId>allure-testng</artifactId>
+                <version>${allure-testng.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>${assertj-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.fabric8</groupId>
+                <artifactId>kubernetes-client</artifactId>
+                <version>${kubernetes-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.awaitility</groupId>
+                <artifactId>awaitility</artifactId>
+                <version>${awaitility.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${maven-surefire-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven-compiler-plugin.version}</version>
+                    <configuration>
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
+                        <compilerArgument>-Xlint:-processing</compilerArgument>
+                        <showWarnings>true</showWarnings>
+                        <failOnWarning>true</failOnWarning>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>acceptance</id>
+            <modules>
+                <module>eric-cnam-tests-testware</module>
+            </modules>
+            <properties>
+                <test.source>${project.basedir}/src/main/java</test.source>
+                <test.output>${project.build.directory}/test-classes</test.output>
+            </properties>
+            <build>
+                <testResources>
+                    <testResource>
+                        <directory>${project.basedir}/src/main/resources</directory>
+                    </testResource>
+                </testResources>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-checkstyle-plugin</artifactId>
+                        <version>${maven-checkstyle-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>validate</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                                <configuration>
+                                    <configLocation>./checkstyle.xml</configLocation>
+                                    <failOnViolation>true</failOnViolation>
+                                    <logViolationsToConsole>true</logViolationsToConsole>
+                                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>com.mycila</groupId>
+                        <artifactId>license-maven-plugin</artifactId>
+                        <version>${license-maven-plugin.version}</version>
+                        <configuration>
+                            <header>./license/copyright.txt</header>
+                            <properties>
+                                <license.year>2023</license.year>
+                            </properties>
+                            <excludes>
+                                <exclude>**/testData/**</exclude>
+                                <exclude>**/suites/**</exclude>
+                                <exclude>.project_*</exclude>
+                                <exclude>**/VERSION*</exclude>
+                                <exclude>license/</exclude>
+                                <exclude>checkstyle.xml</exclude>
+                                <exclude>**/src/test/resources/</exclude>
+                                <exclude>**/.m2/</exclude>
+                                <exclude>**/*.properties</exclude>
+                                <exclude>**/_helpers.tpl</exclude>
+                                <exclude>ruleset2.0.yaml</exclude>
+                                <exclude>**/Jenkins/**</exclude>
+                                <exclude>mvn-settings.xml</exclude>
+                                <exclude>**/allure-report/</exclude>
+                            </excludes>
+                            <headerDefinitions>
+                                <headerDefinition>./license/javaHeaderDefinition.xml</headerDefinition>
+                                <headerDefinition>./license/xmlHeaderDefinition.xml</headerDefinition>
+                            </headerDefinitions>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+</project>
